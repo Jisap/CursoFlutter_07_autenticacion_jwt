@@ -69,7 +69,28 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
         isValid: Formz.validate([ newPassword, state.email ])
     );
   }
+
+  onFormSubmit(){
+
+    _touchEveryField();
+
+    if(!state.isValid) return;
+
+    print(state);
+  }
   
+  _touchEveryField(){
+    
+    final email = Email.dirty(state.email.value);
+    final password = Password.dirty(state.password.value);
+  
+    state = state.copyWith(
+      isFormPosted: true,
+      email: email,
+      password: password,
+      isValid: Formz.validate([ email, password ])
+    );
+  }
 }
 
 // StateNotifierProvider - consume afuera
