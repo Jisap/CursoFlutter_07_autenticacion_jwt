@@ -1,3 +1,5 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:formz/formz.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
 
@@ -47,7 +49,27 @@ class LoginFormState{
   }
 }
 
-// Como implementamos un notifier
+// 2º notifier
+class LoginFormNotifier extends StateNotifier<LoginFormState> {
+  
+  LoginFormNotifier(): super(LoginFormState());
 
+  onEmailChange( String value){
+    final newEmail = Email.dirty(value);
+    state = state.copyWith(
+      email: newEmail,
+      isValid: Formz.validate([ newEmail, state.password ])
+    );
+  }
+
+  onPasswordChanged( String value ){
+    final newPassword = Password.dirty(value);
+    state = state.copyWith(
+        password: newPassword, 
+        isValid: Formz.validate([ newPassword, state.email ])
+    );
+  }
+  
+}
 
 // StateNotifierProvider - consume afuera
