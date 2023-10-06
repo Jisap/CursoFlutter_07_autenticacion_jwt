@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
@@ -94,3 +95,6 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
 }
 
 // StateNotifierProvider - consume afuera
+final LoginFormProvider = StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
+  return LoginFormNotifier();
+});
