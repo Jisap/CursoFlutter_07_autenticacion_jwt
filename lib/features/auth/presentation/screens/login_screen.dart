@@ -72,7 +72,7 @@ class _LoginForm extends ConsumerWidget {  // ConsumerWidget es propio de riverp
             label: 'Correo',
             keyboardType: TextInputType.emailAddress,
             onChanged: (value) => ref.read(loginFormProvider.notifier).onEmailChange(value),
-            errorMessage: loginForm.email.errorMessage,
+            errorMessage: loginForm.isFormPosted ? loginForm.email.errorMessage : null,
           ),
           const SizedBox( height: 30 ),
 
@@ -80,7 +80,7 @@ class _LoginForm extends ConsumerWidget {  // ConsumerWidget es propio de riverp
             label: 'Contraseña',
             obscureText: true,
             onChanged: (value) => ref.read(loginFormProvider.notifier).onPasswordChanged(value),
-            errorMessage: loginForm.password.errorMessage,
+            errorMessage: loginForm.isFormPosted ? loginForm.password.errorMessage : null,
           ),
     
           const SizedBox( height: 30 ),
