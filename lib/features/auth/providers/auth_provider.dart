@@ -43,7 +43,18 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
   }): super( AuthState() );
 
   void loginUser( String email, String password) async {
-    
+    await Future.delayed(const Duration(milliseconds: 500));
+    try {
+      
+      final user = await authRepository.login(email, password);
+      _setLoggedUser(user);
+
+    } on WrongCredentials {
+      logout('Credenciales no son correctas');
+    } catch (e) {
+      logout('Error no controlado');
+    }
+
   }
 
   void registerUser( String email, String password) async {
@@ -53,13 +64,30 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
   void checkAuthStatus() async {
   
   }
+
+  Future<void> logout([ String? errorMessage ]) async {
+    //TODO limpiar token
+    state = state.copyWith(
+      authStatus: AuthStatus.notAuthenticated,
+      user: null,
+      errorMessage: errorMessage
+    );
+  }
+
+  void _setLoggedUser( User user ){
+    //TODO necesito guardar el token en el dispositivo.
+    state = state.copyWith(
+      user: user,
+      authStatus: AuthStatus.authenticated,
+    );
+  }
   
 }
 
 // Provider
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) { // Expone el state a la app
   
-  final authRepository = AuthRepositoryImpl(); // Llamado a la lógica. Se usa el datasource que se estableció por defecto
+  final authRepository = AuthRepositoryImpl(); // Llamado a la lógica (datasource_imp). Se usa el datasource que se estableció por defecto
   
   return AuthNotifier(authRepository: authRepository); //Instancia (esquema de llamado implementado con la lógica)
 });
