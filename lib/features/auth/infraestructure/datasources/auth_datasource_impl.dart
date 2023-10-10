@@ -2,11 +2,10 @@ import 'package:dio/dio.dart';
 import 'package:teslo_shop/config/config.dart';
 import 'package:teslo_shop/features/auth/domain/entities/user.dart';
 import 'package:teslo_shop/features/auth/infraestructure/infrastructure.dart';
-import 'package:teslo_shop/features/auth/infraestructure/mappers/user_mapper.dart';
 import '../../domain/datasources/auth_datasource.dart';
 
 
-class AuthDataSourceImpl extends AuthDataSource{
+class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para efectuar el login/register
 
   final dio = Dio(
     BaseOptions(

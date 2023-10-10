@@ -8,14 +8,14 @@ import '../../domain/domain.dart';
 import '../infrastructure.dart';
 
 
-class AuthRepositoryImpl extends AuthRepository{
+class AuthRepositoryImpl extends AuthRepository{ 
 
-  final AuthDataSource dataSource;  // El repositorio llama al dataSource (definido en domain)
+  final AuthDataSource dataSource;  // El repositorio llama al dataSource (definido en domain) -> Llamado a la lógica
 
   //constructor
-  AuthRepositoryImpl(
-    AuthDataSource? dataSource                          // Si existe el dataSource lo uso
-  ) : dataSource = dataSource ?? AuthDataSourceImpl();  // sino creo una nueva instancia  
+  AuthRepositoryImpl({
+    AuthDataSource? dataSource                           // Si existe el dataSource lo uso
+  }) : dataSource = dataSource ?? AuthDataSourceImpl();  // sino creo una nueva instancia  
 
   
 
@@ -31,8 +31,8 @@ class AuthRepositoryImpl extends AuthRepository{
   }
 
   @override
-  Future<User> register(String email, String Password, String fullName) {
-    return dataSource.register(email, Password, fullName);
+  Future<User> register(String email, String password, String fullName) {
+    return dataSource.register(email, password, fullName);
   }
 
 }
