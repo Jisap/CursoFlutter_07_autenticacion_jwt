@@ -42,7 +42,7 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
     required this.authRepository
   }): super( AuthState() );
 
-  void loginUser( String email, String password) async {
+  Future<void> loginUser( String email, String password) async {
     await Future.delayed(const Duration(milliseconds: 500));
     try {
       
@@ -51,6 +51,8 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
 
     } on WrongCredentials {
       logout('Credenciales no son correctas');
+    } on ConnecctionTimeout{
+      logout('Timeout');  
     } catch (e) {
       logout('Error no controlado');
     }

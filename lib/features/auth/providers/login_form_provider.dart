@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
+import 'package:teslo_shop/features/auth/providers/auth_provider.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
 
 
@@ -53,7 +54,11 @@ class LoginFormState{
 // 2º notifier
 class LoginFormNotifier extends StateNotifier<LoginFormState> {
   
-  LoginFormNotifier(): super(LoginFormState());
+  final Function(String, String) loginUserCallback; // Función del AuthProvider que devuelve un usuario logueado 
+  
+  LoginFormNotifier({
+    required this.loginUserCallback
+  }): super(LoginFormState());
 
   onEmailChange( String value){
     final newEmail = Email.dirty(value);
@@ -71,13 +76,16 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
     );
   }
 
-  onFormSubmit(){
+  onFormSubmit() async{
 
     _touchEveryField();
 
     if(!state.isValid) return;
 
-    print(state);
+    await loginUserCallback(
+      state.email.value,
+      state.password.value
+    );
   }
   
   _touchEveryField(){
@@ -96,5 +104,8 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
 
 // StateNotifierProvider - consume afuera
 final loginFormProvider = StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
-  return LoginFormNotifier();
+  
+  final loginUserCallback = ref.watch(authProvider.notifier).loginUser;
+  
+  return LoginFormNotifier(loginUserCallback: loginUserCallback); // Con el usuario logueado se cambia el estado del formulario
 });

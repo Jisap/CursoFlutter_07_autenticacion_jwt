@@ -20,7 +20,7 @@ class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para ef
   }
 
   @override
-  Future<User> login(String email, String password) async {
+  Future<User> login(String email, String password) async { // Obtiene un user de la bd en base a las credenciales
     
     try {
       final response = await dio.post('/auth/login', data: {  // apiUrl + /auth/login
@@ -39,7 +39,7 @@ class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para ef
   }
 
   @override
-  Future<User> register(String email, String Password, String fullName) {
+  Future<User> register(String email, String password, String fullName) {
     // TODO: implement register
     throw UnimplementedError();
   }
