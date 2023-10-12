@@ -81,6 +81,7 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
     state = state.copyWith(
       user: user,
       authStatus: AuthStatus.authenticated,
+      errorMessage: '',
     );
   }
   
