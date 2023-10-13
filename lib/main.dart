@@ -14,13 +14,13 @@ void main() async{
   );
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends ConsumerWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
 
-    print(Environment.apiUrl);
+    final appRouter = ref.watch( goRouterProvider ); // LLamada al provider que contiene las rutas
 
     return MaterialApp.router(
       routerConfig: appRouter,
