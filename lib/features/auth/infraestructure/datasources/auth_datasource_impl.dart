@@ -5,7 +5,7 @@ import 'package:teslo_shop/features/auth/infraestructure/infrastructure.dart';
 import '../../domain/datasources/auth_datasource.dart';
 
 
-class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para efectuar el login/register
+class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para efectuar el login/register y el checkAuthStatus
 
   final dio = Dio(
     BaseOptions(
@@ -14,9 +14,29 @@ class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para ef
   );
 
   @override
-  Future<User> checkAuthStatus(String token) {
-    // TODO: implement checkAuthStatus
-    throw UnimplementedError();
+  Future<User> checkAuthStatus(String token) async {
+    try {
+      final response = await dio.get('/auth/check-status', // Petición al backend de autenticación del usuario enviandole el token del login
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token'
+          }
+        )
+      );
+
+      final user = UserMapper.userJsonToEntity( response.data );
+      return user;
+
+    } on DioException catch (e) {
+
+      if(e.response?.statusCode == 401){
+        throw CustomError('Token incorrecto');
+      }
+      throw Exception();
+    
+    } catch (e) {
+      throw Exception();
+    }
   }
 
   @override
@@ -35,9 +55,9 @@ class AuthDataSourceImpl extends AuthDataSource { // Contiene la lógica para ef
     } on DioException catch (e){
         if(e.response?.statusCode == 401) throw WrongCredentials();
         if(e.type == DioExceptionType.connectionTimeout) throw ConnecctionTimeout();
-        throw CustomError('Something wrong happend', 1);
+        throw CustomError('Something wrong happend');
     } catch (e) {
-      throw CustomError('Something wrong happend', 1);
+      throw CustomError('Something wrong happend');
     }
     
   }

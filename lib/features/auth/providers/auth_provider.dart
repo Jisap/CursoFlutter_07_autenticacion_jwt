@@ -45,7 +45,9 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
   AuthNotifier({
     required this.authRepository,
     required this.keyValueStorageService
-  }): super( AuthState() );
+  }): super( AuthState()){
+    checkAuthStatus(); // Inicializado el AuthRepository chequeamos el usuario
+  }
 
   Future<void> loginUser( String email, String password) async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -69,7 +71,14 @@ class AuthNotifier extends StateNotifier<AuthState> { // Es una observable class
   }
 
   void checkAuthStatus() async {
-  
+    final token = await keyValueStorageService.getValue<String>('token');
+    if( token == null ) return logout();
+     try {
+       final user = await authRepository.checkAuthStatus(token); // Esquema implementado con lógica obtiene el user del token
+       _setLoggedUser(user);                                     // Establece el estado 
+     } catch (e) {
+       logout();
+     }
   }
 
   Future<void> logout([ String? errorMessage ]) async {
