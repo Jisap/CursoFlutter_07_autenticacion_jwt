@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -105,9 +107,9 @@ class _LoginForm extends ConsumerWidget {  // ConsumerWidget es propio de riverp
             child: CustomFilledButton(
               text: 'Ingresar',
               buttonColor: Colors.black,
-              onPressed: (){
-                ref.read(loginFormProvider.notifier).onFormSubmit();
-              },
+              onPressed: loginForm.isPosting
+                ? null
+                : () => ref.read(loginFormProvider.notifier).onFormSubmit()
             )
           ),
 

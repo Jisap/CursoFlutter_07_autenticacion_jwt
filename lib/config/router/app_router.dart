@@ -47,7 +47,7 @@ final goRouterProvider = Provider((ref) {
 
       if( authStatus == AuthStatus.notAuthenticated) {                        // Si no estoy autenticado
         if( isGoingTo == '/login' || isGoingTo == 'register' ) return null;   // y quiero ir a login o register no hay redirección
-        return '/login';                                                       // Pero si quiero ir a otras rutas si hay redirección a login
+        return '/login';                                                      // Pero si quiero ir a otras rutas si hay redirección a login
       }
     
       if( authStatus == AuthStatus.authenticated){                                            // Si estoy autenticado
