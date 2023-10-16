@@ -47,8 +47,8 @@ class LoginFormState {
 
 // 2º notifier
 class LoginFormNotifier extends StateNotifier<LoginFormState> {
-  final Function(String, String)
-      loginUserCallback; // Función del AuthProvider que devuelve un usuario logueado
+
+  final Function(String, String)loginUserCallback; // Función del AuthProvider que devuelve un usuario logueado
 
   LoginFormNotifier({required this.loginUserCallback})
       : super(LoginFormState());
@@ -56,33 +56,36 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
   onEmailChange(String value) {
     final newEmail = Email.dirty(value);
     state = state.copyWith(
-        email: newEmail, isValid: Formz.validate([newEmail, state.password]));
+      email: newEmail, 
+      isValid: Formz.validate([newEmail, state.password])
+    );
   }
 
   onPasswordChanged(String value) {
     final newPassword = Password.dirty(value);
     state = state.copyWith(
         password: newPassword,
-        isValid: Formz.validate([newPassword, state.email]));
+        isValid: Formz.validate([newPassword, state.email])
+    );
   }
 
   onFormSubmit() async {
-    _touchEveryField(); // Se reciben los values de los campos y se cambia el estado del formulario
+    _touchEveryField();         // Se reciben los values de los campos y se cambia el estado del formulario
 
     if (!state.isValid) return; // Si el state es invalid return
 
-    state = state.copyWith(
-        // Pero si es válido, isPosting=true
-        isPosting: true);
+    state = state.copyWith(     // Pero si es válido, isPosting=true
+        isPosting: true
+    );
 
-    await loginUserCallback(
-        // Se hace login en authProvider con los valores del formulario
+    await loginUserCallback(    // Se hace login en authProvider con los valores del formulario
         state.email.value,
-        state.password.value);
+        state.password.value
+    );
 
-    state = state.copyWith(
-        // Hecho el posteo del login sea o no válido, isPosting = false
-        isPosting: false);
+    state = state.copyWith(     // Hecho el posteo del login sea o no válido, isPosting = false
+        isPosting: false
+    );
   }
 
   _touchEveryField() {
@@ -99,13 +102,8 @@ class LoginFormNotifier extends StateNotifier<LoginFormState> {
 }
 
 // StateNotifierProvider - consume afuera
-final loginFormProvider =
-    StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
-  final loginUserCallback = ref
-      .watch(authProvider.notifier)
-      .loginUser; // loginUserCallback esta referenciado al login del authprovider
+final loginFormProvider = StateNotifierProvider.autoDispose<LoginFormNotifier, LoginFormState>((ref) {
+  final loginUserCallback = ref.watch(authProvider.notifier).loginUser; // loginUserCallback esta referenciado al login del authprovider
 
-  return LoginFormNotifier(
-      loginUserCallback:
-          loginUserCallback); // Con el usuario logueado se cambia el estado del formulario
+  return LoginFormNotifier(loginUserCallback: loginUserCallback);       // Con el usuario logueado se cambia el estado del formulario
 });
