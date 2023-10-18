@@ -1,7 +1,4 @@
 
-
-
-
 import 'package:dio/dio.dart';
 import 'package:teslo_shop/config/config.dart';
 import 'package:teslo_shop/features/products/domain/domain.dart';
