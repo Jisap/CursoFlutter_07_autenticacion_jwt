@@ -41,12 +41,22 @@ class ProductNotifier extends StateNotifier<ProductState>{ // Observable que alm
   final ProductsRepository productsRepository;  // Métodos desde el domain
 
   ProductNotifier({
-    required this.productsRepository,
-    required String productId,
-  }):super(ProductState(id: productId));
+    required this.productsRepository,           // Constructor recibe el método,
+    required String productId,                  // y el id del producto
+  }):super(ProductState(id: productId)){        // y crea la primera instancia de ProductState.
+    loadProduct();                              // Nada mas se crea la instancia del productNotifier se llama al método.
+  }
 
   Future<void> loadProduct() async {
-
+    try {
+      final product = await productsRepository.getProductById(state.id);
+      state = state.copyWith(
+        isLoading: false,
+        product: product
+      );
+    } catch (e) {
+      print(e);
+    }
   }
 
 }
