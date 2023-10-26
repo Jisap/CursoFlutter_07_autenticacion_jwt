@@ -1,6 +1,10 @@
 
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:formz/formz.dart';
+
 import '../../../../shared/infraestructure/inputs/inputs.dart';
+import '../../../domain/domain.dart';
 
 class ProductFormState {
 
@@ -55,4 +59,74 @@ class ProductFormState {
     tags: tags ?? this.tags,
     images: images ?? this.images
   );
+}
+
+//mantiene la data y la procesa, ademas emite la data que será procesada por otros entes.
+
+class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
+
+  final void Function(Map<String, dynamic> productLike)? onSubmitCallback;
+
+  ProductFormNotifier({
+    this.onSubmitCallback,          // Constructor recibe el método,
+    required Product product,       // y el producto que se quiere actualizar , sino valores por defecto
+  }):super(
+    ProductFormState(                       // y crea la primera instancia de ProductFormState.
+      id: product.id,
+      title: Title.dirty(product.title),
+      slug: Slug.dirty(product.slug),
+      price: Price.dirty(product.price),
+      sizes: product.sizes,
+      inStock: Stock.dirty(product.stock),
+      gender: product.gender,
+      description: product.description,
+      tags: product.tags.join(', '),
+      images: product.images,
+    )
+  );
+
+  void onTitleChanged( String value ){
+    state = state.copyWith(
+      title: Title.dirty(value),
+      isFormValid: Formz.validate([
+        Title.dirty(value),
+        Slug.dirty(state.slug.value),
+        Price.dirty(state.price.value),
+        Stock.dirty(state.inStock.value)   
+      ])
+    );
+  }
+
+  void onSlugChanged(String value) {
+    state = state.copyWith(
+        slug: Slug.dirty(value),
+        isFormValid: Formz.validate([
+          Title.dirty(state.title.value),
+          Slug.dirty(value),
+          Price.dirty(state.price.value),
+          Stock.dirty(state.inStock.value)
+        ]));
+  }
+
+  void onPriceChanged(double value) {
+    state = state.copyWith(
+        price: Price.dirty(value),
+        isFormValid: Formz.validate([
+          Title.dirty(state.title.value),
+          Slug.dirty(state.slug.value),
+          Price.dirty(value),
+          Stock.dirty(state.inStock.value)
+        ]));
+  }
+
+  void onStockChanged(int value) {
+    state = state.copyWith(
+        inStock: Stock.dirty(value),
+        isFormValid: Formz.validate([
+          Title.dirty(state.title.value),
+          Slug.dirty(state.slug.value),
+          Price.dirty(state.price.value),
+          Stock.dirty(value)
+        ]));
+  }
 }
