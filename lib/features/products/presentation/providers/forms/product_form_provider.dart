@@ -2,6 +2,7 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
+import 'package:teslo_shop/config/config.dart';
 
 import '../../../../shared/infraestructure/inputs/inputs.dart';
 import '../../../domain/domain.dart';
@@ -65,8 +66,8 @@ class ProductFormState {
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
 
-  final void Function(Map<String, dynamic> productLike)? onSubmitCallback;
-
+  final void Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
+                                                                           // Devuele un productLike (post(producto)) enviada al backend
   ProductFormNotifier({
     this.onSubmitCallback,          // Constructor recibe el método,
     required Product product,       // y el producto que se quiere actualizar , sino valores por defecto
@@ -84,6 +85,40 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
       images: product.images,
     )
   );
+
+  Future<bool>onFormSubmit() async {
+    _touchedEverything();
+    
+    if(!state.isFormValid) return false;
+
+    if(onSubmitCallback == null) return false;
+
+    final productLike = {
+      'id': state.id,
+      'title': state.title.value,
+      'price': state.price.value,
+      'description': state.description,
+      'slug': state.slug.value,
+      'stock': state.inStock.value,
+      'sizes': state.sizes,
+      'gender': state.gender,
+      'tags': state.tags.split(','),
+      'images': state.images.map((image) => image.replaceAll('${Environment.apiUrl}/files/product', '')).toList()
+    };
+
+    return true;
+  }
+
+  void _touchedEverything(){              // Comprobación de la validación de los inputs del formulario (Formz)
+    state = state.copyWith(
+      isFormValid: Formz.validate([
+        Title.dirty(state.title.value),
+        Slug.dirty(state.slug.value),
+        Price.dirty(state.price.value),
+        Stock.dirty(state.inStock.value)
+      ])
+    );
+  }
 
   void onTitleChanged( String value ){
     state = state.copyWith(
@@ -129,4 +164,29 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
           Stock.dirty(value)
         ]));
   }
+
+  void onSizeChanged(List<String> sizes){
+    state = state.copyWith(
+      sizes: sizes
+    );
+  }
+
+  void onGenderChanged(String gender) {
+    state = state.copyWith(
+      gender: gender
+    );
+  }
+
+  void onDescriptionChanged(String description) {
+    state = state.copyWith(
+      description: description
+    );
+  }
+
+  void onTagsChanged(String tags) {
+    state = state.copyWith(
+      tags: tags
+    );
+  }
+
 }
