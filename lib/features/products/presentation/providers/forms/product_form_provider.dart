@@ -72,7 +72,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
     this.onSubmitCallback,          // Constructor recibe el método,
     required Product product,       // y el producto que se quiere actualizar , sino valores por defecto
   }):super(
-    ProductFormState(                       // y crea la primera instancia de ProductFormState.
+    ProductFormState(                       // y crea la primera instancia de ProductFormState y con ella la del ProductNotifier
       id: product.id,
       title: Title.dirty(product.title),
       slug: Slug.dirty(product.slug),
@@ -190,3 +190,16 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
   }
 
 }
+
+// Crea un [stateNotifier] y expone el state actual                     //Métodos           //state        //producto
+final productFormProvider = StateNotifierProvider.autoDispose.family<ProductFormNotifier, ProductFormState, Product>(
+  (ref, product)  {
+  
+
+
+
+    return ProductFormNotifier(
+      product: product
+    );
+  }
+);
