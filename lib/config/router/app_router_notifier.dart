@@ -16,7 +16,7 @@ final goRouterNotifierProvider = Provider((ref) {         // Proveedor basado en
 
 class GoRouterNotifier extends ChangeNotifier { // Significa que puede notificar a los oyentes (listeners) cuando se producen cambios en el estado.
 
-  final AuthNotifier _authNotifier;             // Gestiona la autenticación de la app
+  final AuthNotifier _authNotifier;             // Gestiona la autenticación de la app, (almacena un state observable y su métodos para cambiarlo)
   AuthStatus _authStatus = AuthStatus.checking; // Prop del state de AuthProvider
   
   GoRouterNotifier(this._authNotifier){
