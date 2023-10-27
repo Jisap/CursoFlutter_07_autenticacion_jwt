@@ -7,7 +7,7 @@ import '../providers/product_provider.dart';
 
 class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can listen to providers.
   
-  final String productId;
+  final String productId; // Recibimos el id del pto
   
   const ProductScreen({
     super.key,
@@ -17,7 +17,7 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
   @override
   Widget build(BuildContext context, WidgetRef ref){
 
-    final productState = ref.watch(productProvider(productId));
+    final productState = ref.watch(productProvider(productId)); // Obtenemos el state del pto desde el id
 
     return Scaffold(
       appBar: AppBar(
@@ -32,7 +32,7 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
       ),
       body: productState.isLoading
         ? const FullScreenLoader()
-        : _ProductView(product: productState.product!)
+        : _ProductView(product: productState.product!) // Enviamos el pto a la vista
         ,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -45,7 +45,7 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
 }
 
 class _ProductView extends ConsumerWidget {
-  final Product product;
+  final Product product;                      // La vista recibe el pto
 
   const _ProductView({required this.product});
 
@@ -79,7 +79,7 @@ class _ProductInformation extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     
-    final productForm = ref.watch(productFormProvider(product)); 
+    final productForm = ref.watch(productFormProvider(product)); // Establecemos el state del form a partir del pto
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -93,13 +93,13 @@ class _ProductInformation extends ConsumerWidget {
             isTopField: true,
             label: 'Nombre',
             initialValue: productForm.title.value,
-            onChanged: (value) => ref.read(productFormProvider(product).notifier).onTitleChanged(value),
+            onChanged: (value) => ref.read(productFormProvider(product).notifier).onTitleChanged(value), // Método del FormProvide para cambiar su valor
             errorMessage: productForm.title.errorMessage,
           ),
           CustomProductField(
             label: 'Slug',
             initialValue: productForm.slug.value,
-            onChanged: (value) => ref.read(productFormProvider(product).notifier).onSlugChanged(value),
+            onChanged: (value) => ref.read(productFormProvider(product).notifier).onSlugChanged(value), // idem
             errorMessage: productForm.slug.errorMessage,
           ),
           CustomProductField(
@@ -107,7 +107,7 @@ class _ProductInformation extends ConsumerWidget {
             label: 'Precio',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             initialValue: productForm.price.value.toString(),
-            onChanged: (value) => ref.read(productFormProvider(product).notifier).onPriceChanged(double.tryParse(value) ?? 0),
+            onChanged: (value) => ref.read(productFormProvider(product).notifier).onPriceChanged(double.tryParse(value) ?? -1), // idem
             errorMessage: productForm.price.errorMessage,
           ),
           
@@ -124,7 +124,7 @@ class _ProductInformation extends ConsumerWidget {
             label: 'Existencias',
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             initialValue: productForm.inStock.value.toString(),
-            onChanged: (value) => ref.read(productFormProvider(product).notifier).onStockChanged(int.tryParse(value) ?? 0),
+            onChanged: (value) => ref.read(productFormProvider(product).notifier).onStockChanged(int.tryParse(value) ?? -1), // idem
             errorMessage: productForm.inStock.errorMessage,
           ),
           CustomProductField(

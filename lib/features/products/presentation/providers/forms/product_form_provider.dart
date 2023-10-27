@@ -62,17 +62,17 @@ class ProductFormState {
   );
 }
 
-//mantiene la data y la procesa, ademas emite la data que será procesada por otros entes.
+//Mantiene la data y la procesa, ademas emite la data que será procesada por otros entes.
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
 
   final void Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
                                                                            // Devuele un productLike (post(producto)) enviada al backend
   ProductFormNotifier({
-    this.onSubmitCallback,          // Constructor recibe el método,
-    required Product product,       // y el producto que se quiere actualizar , sino valores por defecto
+    this.onSubmitCallback,                                                 // Constructor recibe el método,
+    required Product product,                                              // y el producto que se quiere actualizar , sino valores por defecto
   }):super(
-    ProductFormState(                       // y crea la primera instancia de ProductFormState y con ella la del ProductNotifier
+    ProductFormState(                                                      // y crea la primera instancia de ProductFormState y con ella la del ProductNotifier
       id: product.id,
       title: Title.dirty(product.title),
       slug: Slug.dirty(product.slug),
