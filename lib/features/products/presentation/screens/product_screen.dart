@@ -33,7 +33,11 @@ class ProductScreen extends ConsumerWidget {
               product: productState.product!) // Enviamos el pto a la vista
       ,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {}, child: Icon(Icons.save_as_outlined)
+        onPressed: () {
+        if(productState.product == null) return;
+        ref.read(productFormProvider(productState.product!).notifier).onFormSubmit();
+        }, 
+        child: const Icon(Icons.save_as_outlined)
       ),
     );
   }

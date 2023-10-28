@@ -3,6 +3,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_shop/config/config.dart';
+import 'package:teslo_shop/features/products/presentation/providers/products_repository_provider.dart';
 
 import '../../../../shared/infraestructure/inputs/inputs.dart';
 import '../../../domain/domain.dart';
@@ -66,7 +67,7 @@ class ProductFormState {
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
 
-  final void Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
+  final Future<Product> Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
                                                                            // Devuele un productLike (post(producto)) enviada al backend
   ProductFormNotifier({
     this.onSubmitCallback,                                                 // Constructor recibe el método,
@@ -106,7 +107,15 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
       'images': state.images.map((image) => image.replaceAll('${Environment.apiUrl}/files/product', '')).toList()
     };
 
-    return true;
+    try {
+      
+      await onSubmitCallback!(productLike);
+      return true;
+
+    } catch (e) {
+    
+      return false;
+    }
   }
 
   void _touchedEverything(){              // Comprobación de la validación de los inputs del formulario (Formz)
@@ -194,9 +203,12 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
 // Crea un [stateNotifier] y expone el state actual                     //Métodos           //state        //producto
 final productFormProvider = StateNotifierProvider.autoDispose.family<ProductFormNotifier, ProductFormState, Product>(
   (ref, product)  {
+
+    final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct;
   
     return ProductFormNotifier(
-      product: product
+      product: product,
+      onSubmitCallback: createUpdateCallback,
     );
   }
 );

@@ -21,9 +21,30 @@ class ProductsDatasourceImpl extends ProductsDatasource {
     ));
 
   @override
-  Future<Product> createUpdateProduct(Map<String, dynamic> productLike) {
-    // TODO: implement createUpdateProduct
-    throw UnimplementedError();
+  Future<Product> createUpdateProduct(Map<String, dynamic> productLike) async {
+    try {
+      
+      final String productId = productLike['id'];                               // El id que nos ocupa es el del pto del formulario
+      final String method = (productId == null) ? 'POST':'PATCH';               // Sino viene es para crear, y si viene es para actualizar 
+      final String url = (productId == null) ? '/products' :'/products/$productId'; // para crear la ruta no lleva id // para actualizar la ruta lleva el id del pto                    
+
+      productLike.remove('id');                                                 // El backend no quiere que el id este presente
+   
+      final response = await dio.request(
+        url,
+        data: productLike,
+        options: Options(
+          method: method
+        )
+      );
+
+      final product = ProductMapper.jsonToEntity(response.data);
+
+      return product;
+
+    } catch (e) {
+      throw Exception();
+    }
   }
 
   @override
