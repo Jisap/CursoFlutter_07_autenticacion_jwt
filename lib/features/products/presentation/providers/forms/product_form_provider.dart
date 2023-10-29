@@ -3,7 +3,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:formz/formz.dart';
 import 'package:teslo_shop/config/config.dart';
-import 'package:teslo_shop/features/products/presentation/providers/products_repository_provider.dart';
+import 'package:teslo_shop/features/products/presentation/providers/providers.dart';
 
 import '../../../../shared/infraestructure/inputs/inputs.dart';
 import '../../../domain/domain.dart';
@@ -67,15 +67,15 @@ class ProductFormState {
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
 
-  final Future<Product> Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
-                                                                           // Devuele un productLike (post(producto)) enviada al backend
+  final Future<bool> Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
+                                                                           // Devuele un bool que indica si el posteo se realizo correctamente
   ProductFormNotifier({
     this.onSubmitCallback,                                                 // Constructor recibe el método,
     required Product product,                                              // y el producto que se quiere actualizar , sino valores por defecto
   }):super(
     ProductFormState(                                                      // y crea la primera instancia de ProductFormState y con ella la del ProductNotifier
-      id: product.id,
-      title: Title.dirty(product.title),
+      id: product.id,                                                       
+      title: Title.dirty(product.title),                                     
       slug: Slug.dirty(product.slug),
       price: Price.dirty(product.price),
       sizes: product.sizes,
@@ -94,7 +94,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
 
     if(onSubmitCallback == null) return false;
 
-    final productLike = {
+    final productLike = { // Recibe los values de los inputs
       'id': state.id,
       'title': state.title.value,
       'price': state.price.value,
@@ -104,16 +104,15 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
       'sizes': state.sizes,
       'gender': state.gender,
       'tags': state.tags.split(','),
-      'images': state.images.map((image) => image.replaceAll('${Environment.apiUrl}/files/product', '')).toList()
+      'images': state.images.map((image) => image.replaceAll('${Environment.apiUrl}/files/product/', '')).toList()
     };
 
     try {
       
-      await onSubmitCallback!(productLike);
-      return true;
+      return await onSubmitCallback!(productLike); // onSubmitCallback -> createUpdateCallback -> actualiza la bd
 
     } catch (e) {
-    
+
       return false;
     }
   }
@@ -204,11 +203,12 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
 final productFormProvider = StateNotifierProvider.autoDispose.family<ProductFormNotifier, ProductFormState, Product>(
   (ref, product)  {
 
-    final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct;
-  
-    return ProductFormNotifier(
-      product: product,
-      onSubmitCallback: createUpdateCallback,
+    //final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct; // Crea o actualiza el backend
+    final createUpdateCallback = ref.watch(productsProvider.notifier).createOrUpdateProduct;
+
+    return ProductFormNotifier(                 // Se expone
+      product: product,                         // el nuevo o actualizado pto (state)
+      onSubmitCallback: createUpdateCallback,   // y el método que permite modificarlo.
     );
   }
 );

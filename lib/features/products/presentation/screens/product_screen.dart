@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:teslo_shop/features/products/presentation/providers/providers.dart';
 import 'package:teslo_shop/features/shared/widgets/widgets.dart';
 import '../../domain/domain.dart';
-import '../providers/product_provider.dart';
+
 
 class ProductScreen extends ConsumerWidget {
   // A [StatelessWidget] that can listen to providers.
@@ -64,7 +64,11 @@ class _ProductView extends ConsumerWidget {
         ),
         const SizedBox(height: 10),
         Center(
-            child: Text(productForm.title.value, style: textStyles.titleSmall)),
+            child: Text(
+              productForm.title.value, 
+              style: textStyles.titleSmall,
+              textAlign: TextAlign.center,
+            )),
         const SizedBox(height: 10),
         _ProductInformation(product: product),
       ],

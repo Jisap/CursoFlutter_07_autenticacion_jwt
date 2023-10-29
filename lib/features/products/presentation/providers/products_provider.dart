@@ -1,7 +1,6 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/domain.dart';
-import '../../domain/entities/product.dart';
 import 'products_repository_provider.dart';
 
 class ProductsState {
@@ -45,6 +44,31 @@ class ProductsNotifier extends StateNotifier<ProductsState> { // Observable que 
   }): super( ProductsState() ) {      // y crea la primera instancia de ProductsState.
     loadNextPage();                   // Nada mas se crea la instancia del productsNotifier se llama al método.
   }       
+
+  Future<bool> createOrUpdateProduct(Map<String, dynamic> productLike) async {
+
+    try {
+      final product = await productsRepository.createUpdateProduct(productLike);        // Pto del form
+      final isProductInList = state.products.any((element) => element.id == product.id);  // Averiguamos si el pto estaba en el state
+    
+      if(!isProductInList){                               // Si no estaba en el state -> pto nuevo
+        state = state.copyWith(                           // Añadimos el pto al state
+          products: [...state.products, product]
+        );
+        return true;
+      }
+
+      state = state.copyWith(                                             // Si si está en el state -> actualizamos el pto 
+        products: state.products.map(                                     // Buscamos en el state un elementID = ptoID a actualizar
+          (element) => (element.id == product.id) ? product : element,
+        ).toList()
+      );
+      return true;
+    
+    } catch (e) {
+      return false;
+    }
+  }
 
   Future loadNextPage() async {
 
