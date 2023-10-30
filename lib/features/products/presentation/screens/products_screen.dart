@@ -66,7 +66,7 @@ class _ProductsViewState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
 
-    final productsState = ref.watch( productsProvider );
+    final productsState = ref.watch( productsProvider );     // Estado de los productos
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),

@@ -67,11 +67,11 @@ class ProductFormState {
 
 class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observable class that stores a single immutable [state].
 
-  final Future<bool> Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función necesaria para enviarla a otro componente
+  final Future<bool> Function(Map<String, dynamic> productLike)? onSubmitCallback; // Función que llama al provider y crea o actualiza el state
                                                                            // Devuele un bool que indica si el posteo se realizo correctamente
   ProductFormNotifier({
     this.onSubmitCallback,                                                 // Constructor recibe el método,
-    required Product product,                                              // y el producto que se quiere actualizar , sino valores por defecto
+    required Product product,                                              // y el producto que se quiere actualizar, sino valores por defecto
   }):super(
     ProductFormState(                                                      // y crea la primera instancia de ProductFormState y con ella la del ProductNotifier
       id: product.id,                                                       
@@ -203,7 +203,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
 final productFormProvider = StateNotifierProvider.autoDispose.family<ProductFormNotifier, ProductFormState, Product>(
   (ref, product)  {
 
-    //final createUpdateCallback = ref.watch(productsRepositoryProvider).createUpdateProduct; // Crea o actualiza el backend
+   // Crea o actualiza el backend y también el state basado en el productsProvider
     final createUpdateCallback = ref.watch(productsProvider.notifier).createOrUpdateProduct;
 
     return ProductFormNotifier(                 // Se expone

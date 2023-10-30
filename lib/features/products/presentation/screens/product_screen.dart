@@ -5,8 +5,7 @@ import 'package:teslo_shop/features/shared/widgets/widgets.dart';
 import '../../domain/domain.dart';
 
 
-class ProductScreen extends ConsumerWidget {
-  // A [StatelessWidget] that can listen to providers.
+class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can listen to providers.
 
   final String productId; // Recibimos el id del pto
 
@@ -14,6 +13,13 @@ class ProductScreen extends ConsumerWidget {
     super.key,
     required this.productId,
   });
+
+  void showSnackbar ( BuildContext context ){
+    ScaffoldMessenger.of(context).clearSnackBars();
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Producto Actualizado'))
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,9 +40,15 @@ class ProductScreen extends ConsumerWidget {
       ,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-        if(productState.product == null) return;
-        ref.read(productFormProvider(productState.product!).notifier).onFormSubmit();
-        }, 
+        if (productState.product == null) return;
+        
+        ref.read(productFormProvider(productState.product!).notifier)
+          .onFormSubmit() // Se actualiza el state y la bd desde el productFormProvider, // basado a su vez este en el productsProvider
+            .then((value) {
+              if(!value) return;
+              showSnackbar(context);
+            });
+        },                                                                            
         child: const Icon(Icons.save_as_outlined)
       ),
     );

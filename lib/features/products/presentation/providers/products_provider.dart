@@ -37,18 +37,18 @@ class ProductsState {
 
 class ProductsNotifier extends StateNotifier<ProductsState> { // Observable que almacena un state
   
-  final ProductsRepository productsRepository; // Métodos desde el domain
+  final ProductsRepository productsRepository;                // Métodos desde el domain
   
   ProductsNotifier({
-    required this.productsRepository  // Constructor recibe el método,
-  }): super( ProductsState() ) {      // y crea la primera instancia de ProductsState.
-    loadNextPage();                   // Nada mas se crea la instancia del productsNotifier se llama al método.
+    required this.productsRepository                          // Constructor recibe el método,
+  }): super( ProductsState() ) {                              // y crea la primera instancia de ProductsState.
+    loadNextPage();                                           // Nada mas se crea la instancia del productsNotifier se llama al método.
   }       
 
-  Future<bool> createOrUpdateProduct(Map<String, dynamic> productLike) async {
+  Future<bool> createOrUpdateProduct(Map<String, dynamic> productLike) async { // Método del notifier que actualiza bd y state
 
     try {
-      final product = await productsRepository.createUpdateProduct(productLike);        // Pto del form
+      final product = await productsRepository.createUpdateProduct(productLike);          // Pto actualizado en la bd
       final isProductInList = state.products.any((element) => element.id == product.id);  // Averiguamos si el pto estaba en el state
     
       if(!isProductInList){                               // Si no estaba en el state -> pto nuevo
