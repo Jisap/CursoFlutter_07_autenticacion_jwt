@@ -25,31 +25,34 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
   Widget build(BuildContext context, WidgetRef ref) {
     final productState = ref.watch(productProvider(productId)); // Obtenemos el state del pto desde el id
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Editar producto'),
-        actions: [
-          IconButton(
-              onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined))
-        ],
-      ),
-      body: productState.isLoading
-          ? const FullScreenLoader()
-          : _ProductView(
-              product: productState.product!) // Enviamos el pto a la vista
-      ,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-        if (productState.product == null) return;
-        
-        ref.read(productFormProvider(productState.product!).notifier)
-          .onFormSubmit() // Se actualiza el state y la bd desde el productFormProvider, // basado a su vez este en el productsProvider
-            .then((value) {
-              if(!value) return;
-              showSnackbar(context);
-            });
-        },                                                                            
-        child: const Icon(Icons.save_as_outlined)
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Editar producto'),
+          actions: [
+            IconButton(
+                onPressed: () {}, icon: const Icon(Icons.camera_alt_outlined))
+          ],
+        ),
+        body: productState.isLoading
+            ? const FullScreenLoader()
+            : _ProductView(
+                product: productState.product!) // Enviamos el pto a la vista
+        ,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+          if (productState.product == null) return;
+          
+          ref.read(productFormProvider(productState.product!).notifier)
+            .onFormSubmit() // Se actualiza el state y la bd desde el productFormProvider, // basado a su vez este en el productsProvider
+              .then((value) {
+                if(!value) return;
+                showSnackbar(context);
+              });
+          },                                                                            
+          child: const Icon(Icons.save_as_outlined)
+        ),
       ),
     );
   }
@@ -205,6 +208,7 @@ class _SizeSelector extends StatelessWidget {
       selected: Set.from(selectedSizes),                                  // Indica cual fue pulsado
       onSelectionChanged: (newSelection) {            // Cuando se pulsa una opción -> método del formProvider -> cambia el state
         onSizesChanged(List.from(newSelection));
+        FocusScope.of(context).unfocus();
       },
       multiSelectionEnabled: true,
     );
@@ -239,6 +243,7 @@ class _GenderSelector extends StatelessWidget {
         selected: {selectedGender},
         onSelectionChanged: (newSelection) {
           onGenderChanged(newSelection.first);
+          FocusScope.of(context).unfocus();
         },
       ),
     );

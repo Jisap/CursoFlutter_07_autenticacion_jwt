@@ -95,7 +95,7 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
     if(onSubmitCallback == null) return false;
 
     final productLike = { // Recibe los values de los inputs
-      'id': state.id,
+      'id': (state.id == 'new') ? null : state.id,
       'title': state.title.value,
       'price': state.price.value,
       'description': state.description,

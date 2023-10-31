@@ -47,8 +47,34 @@ class ProductNotifier extends StateNotifier<ProductState>{ // Observable que alm
     loadProduct();                              // Nada mas se crea la instancia del productNotifier se llama al método.
   }
 
+  Product newEmptyProduct() {
+    return Product(
+      id: 'new',
+      title: '',
+      price: 0,
+      description: '',
+      slug: '',
+      stock: 0,
+      sizes: [],
+      gender: 'men',
+      tags: [],
+      images: []
+    );
+  }
+
   Future<void> loadProduct() async {
     try {
+
+      if(state.id == 'new'){            // Si existe un pto con el id new 
+        
+        state = state.copyWith(         // se crea un nuevo state 
+          isLoading: false,             // con isLoadign en false
+          product: newEmptyProduct()    // y las props del nuevo pto vacio
+        );
+        
+        return; // y se termina sin la carga del pto aquí.
+      }
+
       final product = await productsRepository.getProductById(state.id);
       state = state.copyWith(
         isLoading: false,
