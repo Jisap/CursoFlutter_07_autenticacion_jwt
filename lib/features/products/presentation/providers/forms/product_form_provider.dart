@@ -128,6 +128,12 @@ class ProductFormNotifier extends StateNotifier<ProductFormState> { // An observ
     );
   }
 
+  void updateProductImage( String path ){ // Actualiza el [] images con las imagenes de la camara o la galeria
+    state = state.copyWith(
+      images: [...state.images, path]
+    );
+  }
+
   void onTitleChanged( String value ){
     state = state.copyWith(
       title: Title.dirty(value),

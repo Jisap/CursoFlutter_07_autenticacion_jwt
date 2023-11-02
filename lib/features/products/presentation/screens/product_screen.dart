@@ -1,9 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:teslo_shop/features/products/presentation/providers/providers.dart';
-import 'package:teslo_shop/features/shared/infraestructure/services/camera_gallery_service.dart';
 import 'package:teslo_shop/features/shared/shared.dart';
-import 'package:teslo_shop/features/shared/widgets/widgets.dart';
 import '../../domain/domain.dart';
 
 
@@ -35,8 +35,9 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
           actions: [
             IconButton(
                 onPressed: () async {
-                  final photoPath = await CameraGalleryServiceImpl().selectPhoto();
-                  if( photoPath == null ) return;
+                  final photoPath = await CameraGalleryServiceImpl().selectPhoto(); // Seleccionamos la foto
+                  if( photoPath == null ) return;                                   // Si es null return
+                  ref.read(productFormProvider(productState.product!).notifier).updateProductImage(photoPath); // Actualizamos el state de images
                   photoPath;
                 }, 
                 icon: const Icon(Icons.photo_library_outlined)
@@ -45,6 +46,7 @@ class ProductScreen extends ConsumerWidget {  // A [StatelessWidget] that can li
                 onPressed: () async{
                   final photoPath = await CameraGalleryServiceImpl().takePhoto();
                   if( photoPath == null ) return;
+                  ref.read(productFormProvider(productState.product!).notifier).updateProductImage(photoPath);
                   photoPath;
                 },
                 icon: const Icon(Icons.camera_alt_outlined)
@@ -272,25 +274,43 @@ class _ImageGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageView(
+
+    if( images.isEmpty){  // Si la images[] esta vacio se muestra no-images.jpg
+      ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(20)),
+        child: Image.asset(
+          'assets/images/no-image.jpg',
+          fit: BoxFit.cover
+        )
+      );
+    }
+
+    return PageView(                                                   // Si la images[] tiene contenido
       scrollDirection: Axis.horizontal,
       controller: PageController(viewportFraction: 0.7),
-      children: images.isEmpty
-          ? [
-              ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(20)),
-                  child: Image.asset('assets/images/no-image.jpg',
-                      fit: BoxFit.cover))
-            ]
-          : images.map((e) {
-              return ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(20)),
-                child: Image.network(
-                  e,
-                  fit: BoxFit.cover,
-                ),
-              );
-            }).toList(),
+      children:
+        images.map((image) {                                           // mapeo 
+
+          late ImageProvider imageProvider;
+          if(image.startsWith('http')){                                // Si la image tiene http usamos NetworkImage
+            imageProvider = NetworkImage(image);
+          }else{
+            imageProvider = FileImage(File(image));                    // Sino significara que viene de la gallery o la camara 
+          }
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: ClipRRect(
+              borderRadius: const BorderRadius.all(Radius.circular(20)),
+              child: FadeInImage(
+                fit: BoxFit.cover,
+                image: imageProvider,   // Aquí se usa la imagen 
+                placeholder: const AssetImage('assets/loaders/bottle-loader.gif'),
+              )
+            ),
+          );
+
+        }).toList(),
     );
   }
 }
