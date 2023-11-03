@@ -20,6 +20,39 @@ class ProductsDatasourceImpl extends ProductsDatasource {
       }  
     ));
 
+  Future<String> _uploadFile(String path) async{  // Subida de una imagen
+
+    try {
+      
+      final fileName = path.split('/').last;                          // Nombre de la imagen desde el path.
+
+      final FormData data = FormData.fromMap({                        // Data a subir al server que contiene el file.
+        'file': MultipartFile.fromFileSync(path, filename: fileName)  
+      });
+
+      final response = await dio.post('/files/product', data:data);   // Subimos al backend la imagen.
+      return response.data['image'];                                  // Respuesta del backend con la imagen renombrada.
+
+    } catch (e) {
+      throw Exception();
+    }
+  }
+
+  Future<List<String>> _uploadPhotos( List<String> photos ) async {   // Subida de las imagenes de la cámara o galería.
+
+    final photosToUpload = photos.where((element) => element.contains('/')).toList(); // Imagenes de la cámara o galería.
+    final photosToIgnore = photos.where((element) => !element.contains('/')).toList();// Imagenes que ya estaban.
+  
+    final List<Future<String>> uploadJob = photosToUpload.map( // Multiples subidas de fotos en forma de Future
+      (e) => _uploadFile(e)
+    ).toList();
+
+    final newImages = await Future.wait(uploadJob); // Cuando terminan las subidas se ejecutan en una sola (wait())
+
+    return[...photosToIgnore, ...newImages]; // Se devuelven las fotos que ya existían más las nuevas renombradas.
+  }
+
+
   @override
   Future<Product> createUpdateProduct(Map<String, dynamic> productLike) async {
     try {
@@ -29,7 +62,8 @@ class ProductsDatasourceImpl extends ProductsDatasource {
       final String url = (productId == null) ? '/products' :'/products/$productId'; // para crear la ruta no lleva id // para actualizar la ruta lleva el id del pto                    
 
       productLike.remove('id');                                                     // El backend no quiere que el id este presente
-   
+      productLike['images'] = await _uploadPhotos(productLike['images']);           // Subimos al backend las fotos de la cámara o galería
+
       final response = await dio.request(
         url,
         data: productLike,
